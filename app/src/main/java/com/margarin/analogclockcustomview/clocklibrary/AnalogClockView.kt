@@ -18,7 +18,7 @@ import java.util.Locale
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class AnalogClockView(context: Context?, private val attrs: AttributeSet?) : View(context, attrs) {
 
     private var size = MINIMAL_VIEW_SIZE
     private var scalingCoefficient = 0f
@@ -28,9 +28,11 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
     private var minutes = 0
     private var seconds = 0
 
+    private var showSecondsHand = true
 
     init {
         updateTime()
+        setupAttrs()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -71,12 +73,14 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
             clockHandImageResId = R.drawable.minute_hand,
             angle = minutes * DEGREES_IN_CIRCLE / MINUTES_IN_HOUR
         )
-        drawClockHand(
-            canvas = canvas,
-            scalingCoefficient = scalingCoefficient,
-            clockHandImageResId = R.drawable.second_hand,
-            angle = seconds * DEGREES_IN_CIRCLE / SECONDS_IN_MINUTE + 0.5f  //0.5f компенсирует кривизну секундной стрелки
-        )
+        if (showSecondsHand) {
+            drawClockHand(
+                canvas = canvas,
+                scalingCoefficient = scalingCoefficient,
+                clockHandImageResId = R.drawable.second_hand,
+                angle = seconds * DEGREES_IN_CIRCLE / SECONDS_IN_MINUTE + 0.5f  //0.5f компенсирует кривизну секундной стрелки
+            )
+        }
     }
 
     private fun drawClockFace(canvas: Canvas): Float {
@@ -117,6 +121,17 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
                 delay(1000)
             }
         }
+    }
+
+    private fun setupAttrs() {
+        val typedArray = context?.obtainStyledAttributes(attrs, R.styleable.AnalogClockView, 0, 0)
+        showSecondsHand =
+            typedArray?.getBoolean(R.styleable.AnalogClockView_showSecondsHand, true) ?: true
+        typedArray?.recycle()
+    }
+
+    fun setSecondsHandEnabled(isEnabled: Boolean) {
+        showSecondsHand = isEnabled
     }
 
     companion object {
