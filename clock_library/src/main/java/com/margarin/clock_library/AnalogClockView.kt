@@ -139,7 +139,7 @@ class AnalogClockView(context: Context?, private val attrs: AttributeSet?) : Vie
 
     companion object {
 
-        private const val MINIMAL_VIEW_SIZE = 1000
+        private const val MINIMAL_VIEW_SIZE = 200
 
         private const val DEGREES_IN_CIRCLE = 360f
 
