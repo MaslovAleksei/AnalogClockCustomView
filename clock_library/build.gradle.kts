@@ -1,21 +1,18 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
 }
 
 android {
-    namespace = "com.margarin.analogclockcustomview"
+    namespace = "com.margarin.clock_library"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.margarin.analogclockcustomview"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -33,21 +30,11 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-        buildFeatures {
-            viewBinding = true
-        }
     }
 }
 
 dependencies {
 
-    implementation(project (":clock_library"))
-
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
 }
