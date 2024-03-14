@@ -1,4 +1,4 @@
-package com.margarin.analogclockcustomview.clocklibrary
+package com.margarin.clock_library
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.scale
-import com.margarin.analogclockcustomview.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,6 +28,8 @@ class AnalogClockView(context: Context?, private val attrs: AttributeSet?) : Vie
     private var seconds = 0
 
     private var showSecondsHand = true
+
+    private var updatePeriodInMillis = 1000L
 
     init {
         updateTime()
@@ -112,22 +113,24 @@ class AnalogClockView(context: Context?, private val attrs: AttributeSet?) : Vie
     private fun updateTime() {
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
+                updatePeriodInMillis = if (showSecondsHand) 1000L else 5000L
                 calendar = Calendar.getInstance(Locale.getDefault())
                 hours = calendar.get(Calendar.HOUR_OF_DAY)
                 if (hours > HOURS_IN_AM_PM) hours -= HOURS_IN_AM_PM
                 minutes = calendar.get(Calendar.MINUTE)
                 seconds = calendar.get(Calendar.SECOND)
                 invalidate()
-                delay(1000)
+                delay(updatePeriodInMillis)
             }
         }
     }
 
     private fun setupAttrs() {
-        val typedArray = context?.obtainStyledAttributes(attrs, R.styleable.AnalogClockView, 0, 0)
-        showSecondsHand =
-            typedArray?.getBoolean(R.styleable.AnalogClockView_showSecondsHand, true) ?: true
-        typedArray?.recycle()
+        context?.obtainStyledAttributes(attrs, R.styleable.AnalogClockView, 0, 0).apply {
+            showSecondsHand =
+                this?.getBoolean(R.styleable.AnalogClockView_showSecondsHand, true) ?: true
+            this?.recycle()
+        }
     }
 
     fun setSecondsHandEnabled(isEnabled: Boolean) {

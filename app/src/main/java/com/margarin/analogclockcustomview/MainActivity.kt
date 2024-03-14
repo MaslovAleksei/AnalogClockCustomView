@@ -2,6 +2,7 @@ package com.margarin.analogclockcustomview
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.margarin.analogclockcustomview.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -38,5 +39,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.bottomNavigationView.menu.findItem(binding.bottomNavigationView.selectedItemId)
+    }
+
+    private fun AppCompatActivity.replaceFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.main_container, fragment)
+            .commit()
     }
 }

@@ -1,0 +1,6 @@
+<resources>
+    <string name="first_fragment">First fragment</string>
+    <string name="second_fragment">Second fragment</string>
+    <string name="seconds_clock_hand_enabled">Seconds clock hand enabled</string>
+    <string name="seconds_clock_hand_disabled">Seconds clock hand disabled</string>
+</resources>
