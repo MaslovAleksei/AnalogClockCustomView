@@ -20,17 +20,20 @@ import kotlin.math.roundToInt
 
 class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
-
     private var size = MINIMAL_VIEW_SIZE
+    private var scalingCoefficient = 0f
 
     private var calendar = Calendar.getInstance(Locale.getDefault())
+    private var hours = 0
+    private var minutes = 0
+    private var seconds = 0
+
 
     init {
         updateTime()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
@@ -51,12 +54,6 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
     }
 
     override fun onDraw(canvas: Canvas) {
-
-        var hours = calendar.get(Calendar.HOUR_OF_DAY)
-        if (hours > HOURS_IN_AM_PM) hours -= HOURS_IN_AM_PM
-        val minutes = calendar.get(Calendar.MINUTE)
-        val seconds = calendar.get(Calendar.SECOND)
-        var scalingCoefficient: Float
 
         drawClockFace(canvas = canvas).apply {
             scalingCoefficient = this
@@ -112,6 +109,10 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
                 calendar = Calendar.getInstance(Locale.getDefault())
+                hours = calendar.get(Calendar.HOUR_OF_DAY)
+                if (hours > HOURS_IN_AM_PM) hours -= HOURS_IN_AM_PM
+                minutes = calendar.get(Calendar.MINUTE)
+                seconds = calendar.get(Calendar.SECOND)
                 invalidate()
                 delay(1000)
             }
