@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AnalogClockCustomView"
 include(":app")
- 
+include(":clock_library")

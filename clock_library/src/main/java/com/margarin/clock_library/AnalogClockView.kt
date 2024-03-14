@@ -1,4 +1,4 @@
-package com.margarin.analogclockcustomview.clocklibrary
+package com.margarin.clock_library
 
 import android.content.Context
 import android.graphics.BitmapFactory
@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 import androidx.core.graphics.scale
-import com.margarin.analogclockcustomview.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -18,19 +17,26 @@ import java.util.Locale
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-
+class AnalogClockView(context: Context?, private val attrs: AttributeSet?) : View(context, attrs) {
 
     private var size = MINIMAL_VIEW_SIZE
+    private var scalingCoefficient = 0f
 
     private var calendar = Calendar.getInstance(Locale.getDefault())
+    private var hours = 0
+    private var minutes = 0
+    private var seconds = 0
+
+    private var showSecondsHand = true
+
+    private var updatePeriodInMillis = 1000L
 
     init {
         updateTime()
+        setupAttrs()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
@@ -52,12 +58,6 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
 
     override fun onDraw(canvas: Canvas) {
 
-        var hours = calendar.get(Calendar.HOUR_OF_DAY)
-        if (hours > HOURS_IN_AM_PM) hours -= HOURS_IN_AM_PM
-        val minutes = calendar.get(Calendar.MINUTE)
-        val seconds = calendar.get(Calendar.SECOND)
-        var scalingCoefficient: Float
-
         drawClockFace(canvas = canvas).apply {
             scalingCoefficient = this
         }
@@ -74,12 +74,14 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
             clockHandImageResId = R.drawable.minute_hand,
             angle = minutes * DEGREES_IN_CIRCLE / MINUTES_IN_HOUR
         )
-        drawClockHand(
-            canvas = canvas,
-            scalingCoefficient = scalingCoefficient,
-            clockHandImageResId = R.drawable.second_hand,
-            angle = seconds * DEGREES_IN_CIRCLE / SECONDS_IN_MINUTE + 0.5f  //0.5f компенсирует кривизну секундной стрелки
-        )
+        if (showSecondsHand) {
+            drawClockHand(
+                canvas = canvas,
+                scalingCoefficient = scalingCoefficient,
+                clockHandImageResId = R.drawable.second_hand,
+                angle = seconds * DEGREES_IN_CIRCLE / SECONDS_IN_MINUTE + 0.5f  //0.5f компенсирует кривизну секундной стрелки
+            )
+        }
     }
 
     private fun drawClockFace(canvas: Canvas): Float {
@@ -111,16 +113,33 @@ class AnalogClockView(context: Context?, attrs: AttributeSet?) : View(context, a
     private fun updateTime() {
         CoroutineScope(Dispatchers.Default).launch {
             while (true) {
+                updatePeriodInMillis = if (showSecondsHand) 1000L else 5000L
                 calendar = Calendar.getInstance(Locale.getDefault())
+                hours = calendar.get(Calendar.HOUR_OF_DAY)
+                if (hours > HOURS_IN_AM_PM) hours -= HOURS_IN_AM_PM
+                minutes = calendar.get(Calendar.MINUTE)
+                seconds = calendar.get(Calendar.SECOND)
                 invalidate()
-                delay(1000)
+                delay(updatePeriodInMillis)
             }
         }
     }
 
+    private fun setupAttrs() {
+        context?.obtainStyledAttributes(attrs, R.styleable.AnalogClockView, 0, 0).apply {
+            showSecondsHand =
+                this?.getBoolean(R.styleable.AnalogClockView_showSecondsHand, true) ?: true
+            this?.recycle()
+        }
+    }
+
+    fun setSecondsHandEnabled(isEnabled: Boolean) {
+        showSecondsHand = isEnabled
+    }
+
     companion object {
 
-        private const val MINIMAL_VIEW_SIZE = 1000
+        private const val MINIMAL_VIEW_SIZE = 200
 
         private const val DEGREES_IN_CIRCLE = 360f
 

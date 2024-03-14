@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottom_menu_first"
+        android:title="@string/first_fragment"
+        android:orderInCategory="1"
+        android:enabled="true"
+        android:icon="@drawable/ic_clock"/>
+
+    <item
+        android:id="@+id/bottom_menu_second"
+        android:title="@string/second_fragment"
+        android:orderInCategory="1"
+        android:enabled="true"
+        android:icon="@drawable/ic_clock"/>
+</menu>

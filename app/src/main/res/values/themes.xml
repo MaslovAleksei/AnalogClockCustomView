@@ -5,5 +5,8 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
-    <style name="Theme.AnalogClockCustomView" parent="Base.Theme.AnalogClockCustomView" />
+    <style name="Theme.AnalogClockCustomView" parent="Base.Theme.AnalogClockCustomView" >
+
+        <item name="colorPrimary">@color/black</item>
+    </style>
 </resources>
